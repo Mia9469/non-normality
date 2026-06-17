@@ -1,0 +1,14 @@
+# Separate environment for Brian2CUDA. Brian2CUDA installs its compatible
+# Brian2 version, so do not combine this file with the CPU requirements pin.
+brian2cuda==1.0a4
+numpy>=1.23,<2.0
+pandas>=1.5
+pyarrow>=10
+joblib>=1.2
+scipy>=1.9
+scikit-learn>=1.2
+# Torch is installed separately from the official CUDA wheel index by
+# install_torch_cuda.sh. Leaving it here can silently replace cu126 with a
+# newer wheel that the server driver cannot load.
+rastermap
+tqdm

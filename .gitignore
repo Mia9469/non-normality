@@ -1,0 +1,24 @@
+# Large input data (re-fetch with flywire_spontaneous/download_data.sh)
+*.parquet
+*.csv
+# Simulation outputs / derived run artifacts
+*.npz
+flywire_spontaneous/logs_*/
+flywire_spontaneous/b2_*/
+flywire_spontaneous/critical_init_official/
+# Environments
+.venv/
+.venv-cuda/
+__pycache__/
+*.pyc
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+# OS
+.DS_Store
