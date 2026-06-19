@@ -1,0 +1,200 @@
+{
+  "inputs": [
+    "tmp/server_results_extracted/iso_degree_randomized_rg1.5_s0_analysis.json",
+    "tmp/server_results_extracted/iso_degree_randomized_rg1.5_s1_analysis.json",
+    "tmp/server_results_extracted/iso_degree_randomized_rg1.5_s2_analysis.json",
+    "tmp/server_results_extracted/iso_degree_randomized_rg2.0_s0_analysis.json",
+    "tmp/server_results_extracted/iso_degree_randomized_rg2.0_s1_analysis.json",
+    "tmp/server_results_extracted/iso_degree_randomized_rg2.0_s2_analysis.json",
+    "tmp/server_results_extracted/iso_degree_randomized_rg2.5_s0_analysis.json",
+    "tmp/server_results_extracted/iso_degree_randomized_rg2.5_s1_analysis.json",
+    "tmp/server_results_extracted/iso_degree_randomized_rg2.5_s2_analysis.json",
+    "tmp/server_results_extracted/iso_degree_reciprocal_rg1.5_s0_analysis.json",
+    "tmp/server_results_extracted/iso_degree_reciprocal_rg1.5_s1_analysis.json",
+    "tmp/server_results_extracted/iso_degree_reciprocal_rg1.5_s2_analysis.json",
+    "tmp/server_results_extracted/iso_degree_reciprocal_rg2.0_s0_analysis.json",
+    "tmp/server_results_extracted/iso_degree_reciprocal_rg2.0_s1_analysis.json",
+    "tmp/server_results_extracted/iso_degree_reciprocal_rg2.0_s2_analysis.json",
+    "tmp/server_results_extracted/iso_degree_reciprocal_rg2.5_s0_analysis.json",
+    "tmp/server_results_extracted/iso_degree_reciprocal_rg2.5_s1_analysis.json",
+    "tmp/server_results_extracted/iso_degree_reciprocal_rg2.5_s2_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg0.6_s0_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg0.6_s1_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg0.6_s2_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg0.7_s0_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg0.7_s1_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg0.7_s2_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg0.85_s0_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg0.85_s1_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg0.85_s2_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg1.0_s0_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg1.0_s1_analysis.json",
+    "tmp/server_results_extracted/iso_symmetrized_rg1.0_s2_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom10_original_rg2.0_s0_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom10_original_rg2.0_s1_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom10_original_rg2.0_s2_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom10_symmetrized_rg0.35_s0_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom10_symmetrized_rg0.35_s1_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom10_symmetrized_rg0.35_s2_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom18_original_rg4.0_s0_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom18_original_rg4.0_s1_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom18_original_rg4.0_s2_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom18_symmetrized_rg0.5_s0_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom18_symmetrized_rg0.5_s1_analysis.json",
+    "tmp/server_results_extracted/spont_poisson_recdom18_symmetrized_rg0.5_s2_analysis.json"
+  ],
+  "n_runs": 42,
+  "structural_reciprocity": {
+    "degree_randomized": 0.006,
+    "original": 0.265,
+    "degree_reciprocal": 0.69,
+    "symmetrized": 1.0
+  },
+  "symmetrized_edge_ratio": 1.7032098337747388,
+  "controls": {
+    "degree_randomized": {
+      "n_runs": 9,
+      "n_rotating_runs": 0,
+      "nonrotating_max_abs_imag_mean": 0.16729486816459233,
+      "nonrotating_max_abs_imag_sd": 0.0014697563619470663,
+      "gain_groups": [
+        {
+          "gain": 1.5,
+          "n": 3,
+          "rate_mean_hz": 2.1415675581941014,
+          "rate_sd_hz": 0.01469268960489437,
+          "nu_mean": 0.2024291439331912,
+          "nu_sd": 0.005122740954626446
+        },
+        {
+          "gain": 2.0,
+          "n": 3,
+          "rate_mean_hz": 3.8066744995430444,
+          "rate_sd_hz": 0.033068709114386544,
+          "nu_mean": 0.33189686748929925,
+          "nu_sd": 0.014797565170205642
+        },
+        {
+          "gain": 2.5,
+          "n": 3,
+          "rate_mean_hz": 8.21102008542117,
+          "rate_sd_hz": 0.06401626596616453,
+          "nu_mean": 0.4460960746120854,
+          "nu_sd": 0.005406495408805497
+        }
+      ]
+    },
+    "original": {
+      "n_runs": 6,
+      "n_rotating_runs": 0,
+      "nonrotating_max_abs_imag_mean": 0.1677416761716207,
+      "nonrotating_max_abs_imag_sd": 0.0007278173402356392,
+      "gain_groups": [
+        {
+          "gain": 2.0,
+          "n": 3,
+          "rate_mean_hz": 10.641017399214986,
+          "rate_sd_hz": 0.7835566694969776,
+          "nu_mean": 0.23404968348567987,
+          "nu_sd": 0.008695389335355012
+        },
+        {
+          "gain": 4.0,
+          "n": 3,
+          "rate_mean_hz": 18.555217640538412,
+          "rate_sd_hz": 0.7983796983362442,
+          "nu_mean": 0.45960273140092944,
+          "nu_sd": 0.009367422384642379
+        }
+      ]
+    },
+    "degree_reciprocal": {
+      "n_runs": 9,
+      "n_rotating_runs": 0,
+      "nonrotating_max_abs_imag_mean": 0.16804788510004678,
+      "nonrotating_max_abs_imag_sd": 0.0015622114210749878,
+      "gain_groups": [
+        {
+          "gain": 1.5,
+          "n": 3,
+          "rate_mean_hz": 8.996513509215339,
+          "rate_sd_hz": 0.06677912672891057,
+          "nu_mean": 0.19623732298038857,
+          "nu_sd": 0.009615298744255266
+        },
+        {
+          "gain": 2.0,
+          "n": 3,
+          "rate_mean_hz": 13.193435768636741,
+          "rate_sd_hz": 0.1822996749813874,
+          "nu_mean": 0.27588548474761115,
+          "nu_sd": 0.015687172369995128
+        },
+        {
+          "gain": 2.5,
+          "n": 3,
+          "rate_mean_hz": 17.284791657481364,
+          "rate_sd_hz": 0.3380033663789851,
+          "nu_mean": 0.3438240566907196,
+          "nu_sd": 0.022549745751859633
+        }
+      ]
+    },
+    "symmetrized": {
+      "n_runs": 18,
+      "n_rotating_runs": 3,
+      "nonrotating_max_abs_imag_mean": 0.1766131858030955,
+      "nonrotating_max_abs_imag_sd": 0.013994800398915378,
+      "gain_groups": [
+        {
+          "gain": 0.35,
+          "n": 3,
+          "rate_mean_hz": 10.046798560586225,
+          "rate_sd_hz": 0.33485235802683017,
+          "nu_mean": 0.12862862966855657,
+          "nu_sd": 0.0002621291726199507
+        },
+        {
+          "gain": 0.5,
+          "n": 3,
+          "rate_mean_hz": 18.059706233780222,
+          "rate_sd_hz": 0.5096072086639728,
+          "nu_mean": 0.13057084840268407,
+          "nu_sd": 0.0009196544163539053
+        },
+        {
+          "gain": 0.6,
+          "n": 3,
+          "rate_mean_hz": 24.065540919292076,
+          "rate_sd_hz": 0.5922870166162639,
+          "nu_mean": 0.1328184718668143,
+          "nu_sd": 0.000516807703757527
+        },
+        {
+          "gain": 0.7,
+          "n": 3,
+          "rate_mean_hz": 31.04240711082026,
+          "rate_sd_hz": 0.5959928902069357,
+          "nu_mean": 0.13488062581880716,
+          "nu_sd": 0.00013563250235409943
+        },
+        {
+          "gain": 0.85,
+          "n": 3,
+          "rate_mean_hz": 41.25434397901959,
+          "rate_sd_hz": 0.5150968098080226,
+          "nu_mean": 0.14001662151586042,
+          "nu_sd": 0.0002684312968418628
+        },
+        {
+          "gain": 1.0,
+          "n": 3,
+          "rate_mean_hz": 50.23587834439183,
+          "rate_sd_hz": 0.48814106403921154,
+          "nu_mean": 0.14799832449291994,
+          "nu_sd": 0.0002082560742691977
+        }
+      ]
+    }
+  }
+}

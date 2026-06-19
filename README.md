@@ -15,13 +15,14 @@ critically normalized recurrent dynamics:
    curve of (η, α_eff) pairs, not a single symmetric-critical point.
 2. **Near-real DMD eigenvalues do not imply symmetry.** A non-symmetric,
    non-normal operator `A = T S T⁻¹` has identical real eigenvalues, zero DMD
-   rotation, and the same covariance exponent, variance–timescale relation and
-   zero-shot memory as its symmetric parent.
-3. **A connectome with known ground truth confirms both gaps.** In a whole-brain
+   rotation, and passes corresponding covariance, rank–timescale and scaled
+   zero-shot-memory analyses alongside its symmetric parent.
+3. **A connectome with known ground truth illustrates the non-uniqueness.** In a whole-brain
    *Drosophila* leaky-integrate-and-fire model on the FlyWire connectome,
    degree-preserving nulls vary structural reciprocity over two orders of
-   magnitude at fixed in/out-degree, weight multiset and Dale sign; neither the
-   DMD spectrum nor the covariance exponent recovers it.
+   magnitude at fixed in/out-degree, weight multiset and Dale sign; across the
+   tested graph controls and operating points, neither the DMD spectrum nor the
+   covariance exponent provides a one-to-one ordering of the known reciprocity.
 
 ## Layout
 
@@ -41,6 +42,7 @@ flywire_spontaneous/         FlyWire / Shiu ground-truth test (GPU; Brian2)
   analyze_spontaneous.py     Calls the pinned MouseLand/critical_init SVCA2/DMD
   sweep_recurrence.sh, iso_nu_search.sh, rate_matched_compare.py
   make_fig_identifiability.py
+  precomputed/              42 per-run analysis JSONs, figure, manifests, hashes
   setup_*.sh, download_data.sh, requirements*.txt, README.md
 ```
 
@@ -74,6 +76,14 @@ CONTROL=degree_reciprocal GAINS="1.5 2.0 2.5" bash iso_nu_search.sh
 CONTROL=degree_randomized GAINS="1.5 2.0 2.5" bash iso_nu_search.sh
 python make_fig_identifiability.py iso_*_analysis.json spont_poisson_recdom*_analysis.json \
   --R original=0.265 symmetrized=1.0 degree_reciprocal=0.690 degree_randomized=0.006 \
+  --out fig_identifiability
+```
+
+The archived per-run analysis outputs rebuild the deposited figure without
+rerunning the GPU simulation:
+
+```bash
+python make_fig_identifiability.py precomputed/analysis/*_analysis.json \
   --out fig_identifiability
 ```
 

@@ -1,0 +1,118 @@
+{
+  "interpretation": "Forward-model calibration. Structural eta(W) and eta of a z-scored/PCA-reduced DMD propagator are not expected to be equal.",
+  "official_critical_init": {
+    "repository": "https://github.com/MouseLand/critical_init",
+    "commit": "2c15edf4e770165fc3962dcc3920c8bcaf555bed",
+    "SVCA2": "powerlaw.SVCA2",
+    "fit_powerlaw_exp": "powerlaw.fit_powerlaw_exp",
+    "compute_evals": "powerlaw.compute_evals",
+    "dmd": "lyapun.dmd",
+    "device": "cuda",
+    "svca_repeats": 1,
+    "single_call_exact": true
+  },
+  "simulation": {
+    "input": "iso_degree_randomized_rg2.0_s2.npz",
+    "noise": "poisson",
+    "simulation_backend": "cuda_standalone",
+    "connectome_control": "degree_randomized",
+    "recurrent_gain": 2.0,
+    "duration_s": 1800.0,
+    "dt_s": 0.045454545000000006,
+    "mean_rate_hz": 3.822644532616034,
+    "rate_p05_hz": 0.1177251935005188,
+    "rate_p25_hz": 1.0004419088363647,
+    "rate_median_hz": 1.794211983680725,
+    "rate_p75_hz": 4.186078071594238,
+    "rate_p95_hz": 13.947879791259766,
+    "silent_fraction": 0.0026666666666666666,
+    "binned_fano": 1.161216338203051,
+    "pooled_binned_fano": 1.161216338203051,
+    "median_active_neuron_fano": 0.9389016942848858,
+    "target_rate_band_fraction": 0.414,
+    "high_rate_fraction": 0.029333333333333333,
+    "block_rate_cv": 0.002035875790548223,
+    "recorded_neurons": 3000,
+    "seed": 2,
+    "r_bg_hz": 3000.0,
+    "bg_sources": 100,
+    "w_bg_in_w_syn": 5.0,
+    "r_inh_hz": 3000.0,
+    "gi": 0.9,
+    "poisson_threshold_z": 2.1793124178962735
+  },
+  "functional": [
+    {
+      "name": "binned_spikes_primary",
+      "shape_time_by_neuron": [
+        39599,
+        3000
+      ],
+      "active_neurons": 2992,
+      "svca2": {
+        "nu": 0.3151184119539323,
+        "rank_min": 10,
+        "rank_max": 500
+      },
+      "direct": {
+        "nu": 0.16276557566496408,
+        "rank_min": 10,
+        "rank_max": 500
+      },
+      "dmd": {
+        "lag_bins": 5,
+        "lag_s": 0.22727272500000004,
+        "modes": 1000,
+        "ridge": 0.1,
+        "official_nt": 5000,
+        "max_abs_imag": 0.16882310807704926,
+        "eta_pca_coordinate": 2.550673268844916e-05,
+        "eigenvector_condition": 627.3408813476562,
+        "numerical_minus_spectral_abscissa": 0.10049419105052948,
+        "rotation_count": 0,
+        "rotation_p05": NaN,
+        "rotation_p25": NaN,
+        "rotation_median": NaN,
+        "rotation_p75": NaN,
+        "rotation_p95": NaN,
+        "unstable_fraction": 0.0
+      }
+    },
+    {
+      "name": "membrane_voltage_secondary",
+      "shape_time_by_neuron": [
+        39599,
+        3000
+      ],
+      "active_neurons": 3000,
+      "svca2": {
+        "nu": 0.4988465714109644,
+        "rank_min": 10,
+        "rank_max": 500
+      },
+      "direct": {
+        "nu": 0.28473174372730164,
+        "rank_min": 10,
+        "rank_max": 500
+      },
+      "dmd": {
+        "lag_bins": 5,
+        "lag_s": 0.22727272500000004,
+        "modes": 1000,
+        "ridge": 0.01,
+        "official_nt": 5000,
+        "max_abs_imag": 0.17246504127979279,
+        "eta_pca_coordinate": 0.0006128668118134912,
+        "eigenvector_condition": 1119.5028076171875,
+        "numerical_minus_spectral_abscissa": 0.20900404453277588,
+        "rotation_count": 0,
+        "rotation_p05": NaN,
+        "rotation_p25": NaN,
+        "rotation_median": NaN,
+        "rotation_p75": NaN,
+        "rotation_p95": NaN,
+        "unstable_fraction": 0.0
+      }
+    }
+  ]
+}

@@ -1,20 +1,10 @@
 #!/usr/bin/env python3
-"""Summary figure: functional readouts do not identify connectivity reciprocity.
+"""Summary figure for the FlyWire forward-model sensitivity analysis.
 
-Panel A: the symmetry-specific DMD readout (max|Im lambda|, and rotation where
-present) vs structural reciprocity R, across degree-matched controls and the
-density-doubled symmetrized null. max|Im| is flat across the whole reciprocity
-range; rotation appears only in the synchronous symmetrized-rg1.0 outlier (and
-points the wrong way). -> the spectral symmetry readout is blind to reciprocity.
-
-Panel B: nu(binned SVCA2) vs firing rate, one series per control. The
-degree-matched nulls track the real network (rising with recurrence); only the
-density-doubled symmetrized null is pinned flat at ~0.13 -> its apparent nu
-"separation" is density, not reciprocity. Original and the high-reciprocity
-degree null overlap -> nu does not identify reciprocity.
-
-Reads analyze_spontaneous JSONs; reciprocity R per control supplied on the CLI
-(degree-null analyses are run with --skip-structure).
+Panel A reports a DMD spectral diagnostic against known structural reciprocity.
+Panel B reports the SVCA2 exponent across operating points. The figure is
+descriptive: the graph transformations and firing-rate distributions are not a
+single-factor causal intervention on reciprocity.
 """
 import argparse
 import json
@@ -35,7 +25,13 @@ LABELS = {
     "degree_randomized": "degree-null, recip.↓ (random)",
     "original": "original (real)",
     "degree_reciprocal": "degree-null, recip.↑",
-    "symmetrized": "symmetrized (η=1, 2× density)",
+    "symmetrized": "symmetrized (η=1; 1.70× edges)",
+}
+DEFAULT_R = {
+    "degree_randomized": 0.006,
+    "original": 0.265,
+    "degree_reciprocal": 0.690,
+    "symmetrized": 1.000,
 }
 
 
@@ -53,62 +49,112 @@ def load_rows(files):
     for f in files:
         try:
             j = json.loads(Path(f).read_text())
-        except Exception:
-            continue
+        except Exception as exc:
+            raise ValueError(f"cannot read analysis JSON {f}: {exc}") from exc
         sim = j.get("simulation", {})
         b = readout(j.get("functional", []), "binned_spikes_primary")
         dmd = b.get("dmd", {})
-        rows.append({
+        row = {
             "control": sim.get("connectome_control", "?"),
             "gain": sim.get("recurrent_gain", float("nan")),
+            "seed": sim.get("seed", -1),
             "rate": sim.get("mean_rate_hz", float("nan")),
             "nu": b.get("svca2", {}).get("nu", float("nan")),
             "max_imag": dmd.get("max_abs_imag", float("nan")),
             "rot": dmd.get("rotation_p95", float("nan")),
-        })
-    return [r for r in rows if r["control"] in COLORS]
+            "rotation_count": dmd.get("rotation_count", 0),
+            "file": str(f),
+        }
+        if row["control"] not in COLORS:
+            continue
+        required = ("gain", "rate", "nu", "max_imag")
+        if not all(np.isfinite(row[key]) for key in required):
+            raise ValueError(f"missing finite figure value in {f}")
+        rows.append(row)
+    missing = set(COLORS) - {row["control"] for row in rows}
+    if missing:
+        raise ValueError("missing controls: " + ", ".join(sorted(missing)))
+    return rows
+
+
+def sample_sd(values):
+    return float(np.std(values, ddof=1)) if len(values) > 1 else 0.0
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("json", nargs="+")
-    ap.add_argument("--R", nargs="+", required=True,
+    ap.add_argument("--R", nargs="+", default=[],
                     help="control=reciprocity, e.g. original=0.27 symmetrized=1.0")
     ap.add_argument("--out", default="fig_identifiability")
     args = ap.parse_args()
-    R = {}
+    R = dict(DEFAULT_R)
     for kv in args.R:
         k, v = kv.split("=")
+        if k not in COLORS:
+            raise ValueError(f"unknown control in --R: {k}")
         R[k] = float(v)
     rows = load_rows(args.json)
 
-    fig, (axA, axB) = plt.subplots(1, 2, figsize=(11, 4.2))
+    fig, (axA, axB) = plt.subplots(1, 2, figsize=(11, 4.0))
+    summary = {
+        "inputs": [str(path) for path in args.json],
+        "n_runs": len(rows),
+        "structural_reciprocity": R,
+        "symmetrized_edge_ratio": 25015346 / 14687178,
+        "controls": {},
+    }
 
-    # ---- Panel A: max|Im| (and rotation outliers) vs reciprocity R ----
+    # ---- Panel A: max|Im| against structural reciprocity ----
+    rotating_label_used = False
     for control in COLORS:
         rs = [r for r in rows if r["control"] == control]
-        if not rs or control not in R:
-            continue
-        normal = [r["max_imag"] for r in rs if r["max_imag"] < 0.3]
-        outl = [r for r in rs if r["max_imag"] >= 0.3]
-        if normal:
-            axA.errorbar(R[control], np.mean(normal),
-                         yerr=(np.std(normal) if len(normal) > 1 else 0),
-                         fmt="o", ms=9, color=COLORS[control],
-                         label=LABELS[control], capsize=3)
-        for r in outl:
-            axA.scatter(R[control], r["max_imag"], marker="*", s=220,
-                        color=COLORS[control], zorder=5)
-            axA.annotate("synchronous\n(rotation=%.1f)" % (r["rot"] or 0),
-                         (R[control], r["max_imag"]), textcoords="offset points",
-                         xytext=(-10, -28), fontsize=7.5, ha="center")
-    axA.axhline(np.mean([r["max_imag"] for r in rows if r["max_imag"] < 0.3]),
-                color="0.6", ls=":", lw=1,
-                label="flat across reciprocity")
+        rotating = [
+            r for r in rs
+            if np.isfinite(r["rot"]) and abs(r["rot"]) > 0.05
+        ]
+        nonrotating = [r for r in rs if r not in rotating]
+        offsets = np.linspace(-0.008, 0.008, max(1, len(nonrotating)))
+        axA.scatter(
+            R[control] + offsets,
+            [r["max_imag"] for r in nonrotating],
+            s=20, color=COLORS[control], alpha=0.28, linewidths=0,
+        )
+        values = [r["max_imag"] for r in nonrotating]
+        axA.errorbar(
+            R[control], np.mean(values), yerr=sample_sd(values),
+            fmt="o", ms=8, color=COLORS[control], ecolor=COLORS[control],
+            label=LABELS[control], capsize=3, zorder=4,
+        )
+        for r in rotating:
+            axA.scatter(
+                R[control], r["max_imag"], marker="*", s=180,
+                color=COLORS[control], zorder=5,
+                label=("rotating high-gain runs" if not rotating_label_used else None),
+            )
+            rotating_label_used = True
+        summary["controls"][control] = {
+            "n_runs": len(rs),
+            "n_rotating_runs": len(rotating),
+            "nonrotating_max_abs_imag_mean": float(np.mean(values)),
+            "nonrotating_max_abs_imag_sd": sample_sd(values),
+        }
+    pooled_nonrotating = [
+        r["max_imag"] for r in rows
+        if not (np.isfinite(r["rot"]) and abs(r["rot"]) > 0.05)
+    ]
+    axA.axhline(np.mean(pooled_nonrotating), color="0.65", ls=":", lw=1)
+    axA.annotate(
+        "high-gain symmetrized\nrotation = 1.4-2.0",
+        (1.0, 0.54), xytext=(-8, 0), textcoords="offset points",
+        fontsize=7.5, ha="right", va="center",
+    )
     axA.set_xlabel("structural reciprocity  R")
     axA.set_ylabel(r"DMD  $\max|\mathrm{Im}\,\lambda|$  (binned)")
-    axA.set_title("(a) symmetry readout is blind to reciprocity", fontsize=10)
-    axA.legend(frameon=False, fontsize=7.5, loc="center left")
+    axA.set_title("(a) DMD diagnostic is not one-to-one with R", fontsize=10)
+    axA.set_xlim(-0.03, 1.04)
+    axA.set_ylim(0.14, 0.64)
+    axA.legend(frameon=False, fontsize=7.2, loc="upper left")
 
     # ---- Panel B: nu(binned) vs rate, per control (mean +/- sd over seeds) ----
     for control in COLORS:
@@ -123,25 +169,42 @@ def main():
             rate = [x["rate"] for x in grp]
             nu = [x["nu"] for x in grp]
             pts.append((np.mean(rate), np.mean(nu),
-                        np.std(nu) if len(nu) > 1 else 0.0,
-                        np.std(rate) if len(rate) > 1 else 0.0))
+                        sample_sd(nu), sample_sd(rate),
+                        grp[0]["gain"], len(grp)))
         pts.sort()
-        rate, nu, nuerr, rterr = (np.array(c) for c in zip(*pts))
+        rate, nu, nuerr, rterr = (
+            np.asarray(c, float) for c in zip(*[point[:4] for point in pts])
+        )
         axB.errorbar(rate, nu, yerr=nuerr, xerr=rterr, fmt="o-",
                      color=COLORS[control], lw=1.8, ms=6, capsize=2,
                      label=LABELS[control])
+        summary["controls"][control]["gain_groups"] = [
+            {
+                "gain": float(point[4]),
+                "n": int(point[5]),
+                "rate_mean_hz": float(point[0]),
+                "rate_sd_hz": float(point[3]),
+                "nu_mean": float(point[1]),
+                "nu_sd": float(point[2]),
+            }
+            for point in pts
+        ]
     axB.set_xlabel("mean firing rate (Hz)")
     axB.set_ylabel(r"$\nu$  (binned SVCA2 exponent)")
-    axB.set_title(r"(b) $\nu$: symmetrized flat = density, not reciprocity",
+    axB.set_title(r"(b) $\nu$ depends on operating point and graph control",
                   fontsize=10)
     axB.legend(frameon=False, fontsize=7.5, loc="center right")
 
-    fig.suptitle("Functional readouts do not recover structural reciprocity",
-                 fontsize=11, y=1.02)
+    # No figure-level title: the manuscript caption carries it (avoids
+    # duplicating the caption's bold lead). Panel titles remain.
     fig.tight_layout()
     fig.savefig(args.out + ".pdf", bbox_inches="tight")
     fig.savefig(args.out + ".png", dpi=200, bbox_inches="tight")
-    print("saved", args.out + ".pdf /.png", f"({len(rows)} runs)")
+    Path(args.out + "_summary.json").write_text(
+        json.dumps(summary, indent=2) + "\n"
+    )
+    print("saved", args.out + ".pdf /.png /_summary.json",
+          f"({len(rows)} runs)")
 
 
 if __name__ == "__main__":

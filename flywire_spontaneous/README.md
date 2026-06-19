@@ -254,4 +254,25 @@ The strongest valid result is a sensitivity comparison across the original and
 symmetrized forward models, operating points, seeds and partial observations.
 Structural and fitted-propagator metrics must be reported separately.
 
+## Precomputed analysis outputs
+
+`precomputed/analysis/` contains the 42 per-run SVCA2/DMD JSON files used for
+the connectome figure. `precomputed/manifest.json` records control, gain, seed,
+key plotted values and the pinned `MouseLand/critical_init` commit for each
+run. `precomputed/SHA256SUMS` verifies every deposited file, while
+`precomputed/server_code_and_null_sha256.txt` records the server-side code and
+degree-null hashes.
+
+Rebuild the deposited figure from the JSON files alone:
+
+```bash
+python make_fig_identifiability.py precomputed/analysis/*_analysis.json \
+  --out fig_identifiability
+```
+
+The gain sweep spans a broad range of operating points. High-gain runs are
+exploratory stress tests, not one matched low-rate biological regime. Direct
+symmetrization changes edge count, degree, Dale sign and topology, so its
+contrast cannot be attributed specifically to reciprocity or density.
+
 Data source: Edmond/MPG doi:10.17617/3.CZODIW, Shiu et al. (2024).
