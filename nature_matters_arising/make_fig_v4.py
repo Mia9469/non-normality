@@ -5,7 +5,7 @@ Four panels synthesising the two identifiability gaps:
   a -- Degeneracy surface nu(eta, alpha_eff)         [Gap 1]
   b -- Operator eigenvalue spectra                    [Gap 2]
   c -- Covariance exponent vs. asymmetry sweep        [Gap 2 validation]
-  d -- Time-independent zero-shot memory              [Gap 2 validation]
+  d -- Randomized-delay zero-shot readout             [Gap 2 validation]
 
 Uses data from ma_degeneracy_surface.json and ma_real_spectrum_results.json.
 """
@@ -26,7 +26,7 @@ DEGEN = os.path.join(HERE, "ma_degeneracy_surface.json")
 REAL = os.path.join(HERE, "ma_real_spectrum_results.json")
 OUT = os.path.join(HERE, "figures", "fig_v4")
 
-CORTEX = (0.68, 0.78)
+CORTEX = (0.70, 0.85)
 TWO3 = 2 / 3
 
 plt.rcParams.update({
@@ -40,6 +40,19 @@ plt.rcParams.update({
 def load_json(path):
     with open(path) as f:
         return json.load(f)
+
+
+def public_code_exponent(spectrum, rank_min=10, rank_max=500):
+    """Reproduce released fit_powerlaw_exp weighting on a saved spectrum."""
+    values = np.sort(np.asarray(spectrum, float))[::-1]
+    stop = min(rank_max, len(values) // 2, len(values))
+    indices = np.arange(rank_min, stop, dtype=int)
+    ranks = indices + 1.0
+    y = np.log(np.abs(values[indices]))[:, None]
+    x = np.column_stack((-np.log(ranks), np.ones_like(ranks)))
+    weight = (1.0 / ranks)[:, None]
+    beta = np.linalg.solve(x.T @ (x * weight), (weight * x).T @ y)
+    return float(beta[0, 0])
 
 
 def panel_a(ax, d):
@@ -59,24 +72,27 @@ def panel_a(ax, d):
     etas_sorted = etas[order]
     NU_sorted = NU[order]
 
-    im = ax.imshow(NU_sorted, origin="lower", aspect="auto", cmap="viridis",
-                   extent=[alphas.min(), alphas.max(), etas_sorted.min(),
-                           etas_sorted.max()])
+    # True linear, proportional alpha_eff axis: pcolormesh respects the actual
+    # (non-uniform) alpha coordinates, so cell widths track the real spacing.
+    xpos = alphas
+    im = ax.pcolormesh(xpos, etas_sorted, NU_sorted, shading="nearest",
+                       cmap="viridis")
 
     # Iso-nu contours
     try:
-        cs = ax.contour(alphas, etas_sorted, NU_sorted,
-                        levels=[TWO3, 0.78, 1.0, 1.25],
+        cs = ax.contour(xpos, etas_sorted, NU_sorted,
+                        levels=[TWO3, 0.85, 1.0, 1.25],
                         colors="w", linewidths=1.0)
         ax.clabel(cs, fmt="%.2f", fontsize=7)
-        # Highlight cortical band as a filled band + bright outline so it
-        # reads as a diagonal curve (not a point) in print.
-        ax.contourf(alphas, etas_sorted, NU_sorted,
+        # Highlight the reported cortical/brainwide range as a filled band
+        # plus a bright outline so it reads as a diagonal curve (not a point).
+        ax.contourf(xpos, etas_sorted, NU_sorted,
                     levels=list(CORTEX), colors=["red"], alpha=0.30)
-        ax.contour(alphas, etas_sorted, NU_sorted,
+        ax.contour(xpos, etas_sorted, NU_sorted,
                    levels=list(CORTEX), colors="red", linewidths=1.3)
     except Exception:
         pass
+    ax.set_xlim(alphas.min(), 1.0)
 
     ax.set_xlabel(r"spectral abscissa $\alpha_{\rm eff}$")
     ax.set_ylabel(r"reciprocity $\eta$  (1 = symmetric)")
@@ -86,9 +102,11 @@ def panel_a(ax, d):
     cb.set_label(r"covariance exponent $\nu$")
 
     # Annotate the two anchoring columns
-    ax.text(0.999, 1.02, r"$\eta{=}1\to 2/3$", ha="right", va="bottom",
+    ax.text(0.997, 1.02, r"$\eta{=}1,\ \alpha\to1:\ \nu\to2/3$",
+            ha="right", va="bottom",
             fontsize=6.5, color="white", fontweight="bold")
-    ax.text(0.999, 0.02, r"$\eta{=}0\to 1.25$", ha="right", va="bottom",
+    ax.text(0.997, 0.02, r"$\eta{=}0,\ \alpha\to1:\ \nu\to1.25$",
+            ha="right", va="bottom",
             fontsize=6.5, color="white", fontweight="bold")
 
 
@@ -135,15 +153,16 @@ def panel_c(ax, d):
     gain_keys.sort(key=lambda x: float(x.rsplit("_", 1)[1]))
 
     gains = np.array([float(k.rsplit("_", 1)[1]) for k in gain_keys])
-    nu_vals = np.array([[r["nu"] for r in d["conditions"][k]]
+    nu_vals = np.array([[public_code_exponent(r["covariance_spectrum"])
+                         for r in d["conditions"][k]]
                          for k in gain_keys])
     asym_vals = np.array([[r["asymmetry"] for r in d["conditions"][k]]
                            for k in gain_keys])
 
     ax.axhspan(CORTEX[0], CORTEX[1], color="#ef9a9a", alpha=0.30,
-               label="cortical band")
+               label="cortex / brainwide ephys")
     ax.errorbar(asym_vals.mean(1), nu_vals.mean(1),
-                xerr=asym_vals.std(1), yerr=nu_vals.std(1),
+                xerr=asym_vals.std(1, ddof=1), yerr=nu_vals.std(1, ddof=1),
                 color="#d62728", marker="o", ms=4, capsize=2)
 
     for x, y, g in zip(asym_vals.mean(1), nu_vals.mean(1), gains):
@@ -156,7 +175,7 @@ def panel_c(ax, d):
 
 
 def panel_d(ax, d):
-    """Time-independent zero-shot memory — Gap 2 validation."""
+    """Time-independent randomized-delay readout — Gap 2 validation."""
     memory_colors = {
         "symmetric": "#1f77b4",
         "real_spectrum_nonnormal": "#d62728",
@@ -175,13 +194,13 @@ def panel_d(ax, d):
         ax.plot(delays, values.mean(0), "-o", color=memory_colors[name],
                 ms=3.5, lw=1.4, label=memory_labels[name])
         ax.fill_between(delays,
-                        values.mean(0) - values.std(0),
-                        values.mean(0) + values.std(0),
+                        values.mean(0) - values.std(0, ddof=1),
+                        values.mean(0) + values.std(0, ddof=1),
                         color=memory_colors[name], alpha=0.15)
 
     ax.set(xlabel="maximum randomized readout delay (s)",
            ylabel="zero-shot accuracy",
-           title="d  Time-independent zero-shot memory",
+           title="d  Randomized-delay zero-shot readout",
            ylim=(0, 1.03))
     ax.legend(frameon=False, fontsize=7)
 

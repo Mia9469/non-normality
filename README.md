@@ -5,14 +5,15 @@ population activity does not identify symmetric critical dynamics" (arising from
 M. Pachitariu *et al.*, *Nature* 2026). The manuscript itself is not included in
 this repository.
 
-The argument is that two reported observables of spontaneous cortical
-activity — a covariance power-law exponent (ν ≈ 0.7–0.85) and near-real
+The argument is that two reported observables of spontaneous cortical and
+brainwide activity — a covariance power-law exponent (ν ≈ 0.7–0.85) and near-real
 dynamic-mode-decomposition (DMD) eigenvalues — do **not** identify symmetric,
 critically normalized recurrent dynamics:
 
 1. **The exponent is degenerate.** ν is set jointly by reciprocity η and the
-   spectral abscissa α_eff, so the cortical band is reproduced along a whole
-   curve of (η, α_eff) pairs, not a single symmetric-critical point.
+   spectral abscissa α_eff. Each fixed exponent in the reported cortical and
+   brainwide range is reproduced along an iso-ν curve, and the full range maps
+   to a parameter swath rather than a single symmetric-critical point.
 2. **Near-real DMD eigenvalues do not imply symmetry.** A non-symmetric,
    non-normal operator `A = T S T⁻¹` has identical real eigenvalues, zero DMD
    rotation, and passes corresponding covariance, rank–timescale and scaled
@@ -22,7 +23,7 @@ critically normalized recurrent dynamics:
    degree-preserving nulls vary structural reciprocity over two orders of
    magnitude at fixed in/out-degree, weight multiset and Dale sign; across the
    tested graph controls and operating points, neither the DMD spectrum nor the
-   covariance exponent provides a one-to-one ordering of the known reciprocity.
+   covariance exponent is determined by the known reciprocity alone.
 
 ## Layout
 
@@ -59,6 +60,11 @@ python ma_effective_operator_from_data.py  # estimator validation
 mkdir -p figures && python make_fig_v4.py  # rebuilds the analytic figure
 ```
 
+The reported figures use the released `fit_powerlaw_exp` implementation
+(`1/rank` weighting). The Article's Methods text describes inverse-log-rank
+weighting; applying that convention to the saved counterexample spectra leaves
+the central comparison unchanged.
+
 ## FlyWire ground-truth test (GPU)
 
 Runs the published Shiu *Drosophila* LIF model (Brian2 / brian2cuda) on the
@@ -79,7 +85,7 @@ python make_fig_identifiability.py iso_*_analysis.json spont_poisson_recdom*_ana
   --out fig_identifiability
 ```
 
-The archived per-run analysis outputs rebuild the deposited figure without
+The deposited per-run analysis outputs rebuild the figure without
 rerunning the GPU simulation:
 
 ```bash

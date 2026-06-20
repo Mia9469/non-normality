@@ -53,7 +53,7 @@ def stationary_covariance(a):
 
 
 def fit_powerlaw(eigenvalues, rank_min=10, rank_max=None):
-    """Article-code-matched 1/rank-weighted log--log power-law fit."""
+    """Released-code-matched 1/rank-weighted log--log power-law fit."""
     values = np.sort(np.asarray(eigenvalues, float))[::-1]
     values = values[values > 0]
     if rank_max is None:
@@ -134,17 +134,16 @@ def plot(result, path):
     nu = np.asarray(result["nu"])
     order = np.argsort(etas)
     fig, ax = plt.subplots(figsize=(5.4, 4.2))
-    im = ax.imshow(
-        nu[order], origin="lower", aspect="auto", cmap="viridis",
-        extent=[alphas.min(), alphas.max(), etas.min(), etas.max()]
+    im = ax.pcolormesh(
+        alphas, etas[order], nu[order], shading="nearest", cmap="viridis"
     )
     try:
         cs = ax.contour(alphas, etas[order], nu[order],
-                        levels=[2 / 3, 0.78, 1.0, 1.25],
+                        levels=[2 / 3, 0.85, 1.0, 1.25],
                         colors="w", linewidths=1.0)
         ax.clabel(cs, fmt="%.2f", fontsize=7)
         ax.contourf(alphas, etas[order], nu[order],
-                    levels=[0.68, 0.78], colors=["red"], alpha=0.25)
+                    levels=[0.70, 0.85], colors=["red"], alpha=0.25)
     except ValueError:
         pass
     ax.set_xlabel(r"spectral abscissa $\alpha_{\rm eff}=\max\Re\lambda(A)$")

@@ -25,7 +25,8 @@ recordings would NOT prove asymmetric connectivity -- it would be the same
 inference the Article makes for symmetry, reversed. The public Pachitariu/Stringer
 data is entirely FUNCTIONAL (Neuropixels spikes + two-photon calcium); it cannot
 resolve connectivity symmetry in either direction. Settling that requires
-structural connectivity or causal-perturbation data, not a re-analysis of activity.
+structural connectivity, or perturbation data interpreted through an
+independently constrained biophysical model, not a re-analysis of activity.
 This script's role is therefore (a) to provide the estimator, and (b) to document
 its limits: a finite-data noise floor on kappa(V), with omega-alpha as the more
 robust (but still effective-operator-level) witness.
@@ -107,6 +108,6 @@ if __name__ == "__main__":
               f"{gt['max_im']:>9.2e} {gt['gap']:>9.3f}")
         print(f"{name+' [from data]':>26} {est['kappaV']:>10.1f} {est['eta']:>7.3f} "
               f"{est['max_im']:>9.2e} {est['gap']:>9.3f}")
-    print("\nIf the data-estimated kappa(V) tracks the ground truth (≈1 for "
-          "symmetric, ≫1 for non-normal), the estimator is validated; applying "
-          "analyze_activity() to the public recordings is the decisive test.")
+    print("\nThis validates a diagnostic of the effective operator. Applying "
+          "analyze_activity() to functional recordings can test effective "
+          "non-normality, but cannot by itself determine synaptic symmetry.")

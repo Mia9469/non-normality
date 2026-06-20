@@ -74,16 +74,18 @@ def ginibre_operator(n, rng, rho=0.998):
 
 
 def weighted_power_law(evals, n_min=10, n_max=None):
-    """Article-matched weighted log--log fit (rank 10 to 500 or half-length)."""
-    x = np.sort(np.asarray(evals).real)[::-1]
+    """Match the released fit_powerlaw_exp implementation."""
+    values = np.sort(np.asarray(evals).real)[::-1]
     if n_max is None:
-        n_max = min(500, len(x) // 2)
-    ranks = np.arange(n_min, n_max + 1)
-    keep = x[n_min - 1:n_max] > 0
-    ranks, vals = ranks[keep], x[n_min - 1:n_max][keep]
-    slope = np.polyfit(np.log(ranks), np.log(vals), 1,
-                       w=1.0 / np.log(ranks))[0]
-    return float(-slope), int(n_max)
+        n_max = min(500, len(values) // 2)
+    stop = min(n_max, len(values))
+    indices = np.arange(n_min, stop, dtype=int)
+    ranks = indices + 1.0
+    y = np.log(np.abs(values[indices]))[:, None]
+    x = np.column_stack((-np.log(ranks), np.ones_like(ranks)))
+    weight = (1.0 / ranks)[:, None]
+    beta = np.linalg.solve(x.T @ (x * weight), (weight * x).T @ y)
+    return float(beta[0, 0]), int(stop)
 
 
 def reciprocity(a):
@@ -290,7 +292,8 @@ def summarize(results):
                 "dmd_rotation_median", "variance_timescale_r"]
         vals = {k: np.array([r[k] for r in rows], float) for k in keys}
         print(f"{name:>25}: " + "  ".join(
-            f"{k}={vals[k].mean():.3f}+/-{vals[k].std():.3f}" for k in keys
+            f"{k}={vals[k].mean():.3f}+/-{vals[k].std(ddof=1):.3f}"
+            for k in keys
         ))
     print("\n== Time-independent zero-shot accuracy ==")
     for name in results["memory"]:

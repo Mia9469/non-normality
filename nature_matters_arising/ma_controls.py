@@ -212,7 +212,7 @@ def main():
         at, _ = agg(results[init]['trained'], 'asym')
         dr, _ = agg(results[init]['trained'], 'dmd_n_rot10_med')
         print(f"{init:>13} {ni:>7.3f}+/-{si:<5.3f} {nt:>7.3f}+/-{st:<5.3f} {at:>9.3f} {dr:>11.3f}")
-    print(f"\nReference: nu=2/3={2/3:.3f}; cortex band 0.68-0.78")
+    print(f"\nReference: nu=2/3={2/3:.3f}; reported cortex/ephys range 0.70-0.85")
     print("Read-out: if nu_init is already ~2/3 at a symmetric near-critical init,")
     print("the exponent does NOT distinguish initialization from learning (degeneracy).")
 
