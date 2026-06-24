@@ -31,6 +31,7 @@ critically normalized recurrent dynamics:
 nature_matters_arising/      Analytic reproduction (Gap 1 / Gap 2)
   ma_degeneracy_surface.py            Gap 1: ν(η, α_eff) Lyapunov degeneracy surface
   ma_real_spectrum_counterexample.py  Gap 2: real-spectrum non-normal counterexample
+  ma_biological_gain_counterexample.py Gap 2: gain-dressed real-spectrum control (untuned)
   ma_sparse_spatial_counterexample.py Gap 2 robustness (sparse, spatial)
   ma_effective_operator_from_data.py  Effective-operator estimator + validation
   ma_probe_diagnostic.py, ma_controls.py
